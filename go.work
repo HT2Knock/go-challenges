@@ -1,8 +1,9 @@
 go 1.26.1
 
 use (
-	./circular
-	./datetest
+	./deadlock
 	./goroutine-leak
+	./goroutine-memory
 	./task-scheduling
+	./time-conversion
 )

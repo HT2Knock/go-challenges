@@ -1,3 +1,4 @@
+// See NOTES.md for detailed explanation
 package main
 
 import (
@@ -6,7 +7,6 @@ import (
 )
 
 func main() {
-	// could be fix by adding buffer but this is a small fix
 	ch1 := make(chan struct{})
 	ch2 := make(chan struct{})
 

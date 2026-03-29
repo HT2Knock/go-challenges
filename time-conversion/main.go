@@ -1,3 +1,4 @@
+// See NOTES.md for detailed explanation
 package main
 
 import (

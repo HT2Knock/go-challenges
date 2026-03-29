@@ -1,3 +1,4 @@
+// See NOTES.md for detailed explanation
 package main
 
 import (
@@ -20,17 +21,13 @@ func gen() <-chan int {
 }
 
 func main() {
-	// We could solve it using ctx.Done() signal or create a done channel
-
 	for i := range gen() {
 		if i == 5 {
 			break
 		}
 	}
 
-	// Log the number of go routines
 	fmt.Printf("Number of Go routines: %v\n", runtime.NumGoroutine())
 
-	// Lookup through the profilling. It's collect CPU traces, memory allocation traces, and mostly go-routine stack traces.
 	pprof.Lookup("goroutine").WriteTo(os.Stdout, 1)
 }
