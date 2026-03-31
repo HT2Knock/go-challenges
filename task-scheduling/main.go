@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/list"
 	"fmt"
 	"math/rand"
 	"slices"
@@ -12,6 +13,44 @@ type Task struct {
 	durationMs   int
 }
 
+func topSort(tasks []Task) []string {
+	inDegree := make(map[string]int)
+	adjList := make(map[string][]string)
+	queue := list.New()
+	sortedList := []string{}
+
+	for _, task := range tasks {
+		inDegree[task.id] = len(task.dependencies)
+
+		for _, dep := range task.dependencies {
+			adjList[dep] = append(adjList[dep], task.id)
+		}
+	}
+
+	for _, task := range tasks {
+		if inDegree[task.id] == 0 {
+			queue.PushBack(task.id)
+		}
+	}
+
+	for queue.Len() > 0 {
+		e := queue.Front()
+		u := e.Value.(string)
+		queue.Remove(e)
+
+		sortedList = append(sortedList, u)
+
+		for _, neighbor := range adjList[u] {
+			inDegree[neighbor] -= 1
+			if inDegree[neighbor] == 0 {
+				queue.PushBack(neighbor)
+			}
+		}
+	}
+
+	return sortedList
+}
+
 func generateTask(n int) []Task {
 	tasks := make([]Task, n)
 
@@ -21,11 +60,8 @@ func generateTask(n int) []Task {
 		var deps []string
 
 		if i > 0 {
-			numDeps := rand.Intn(3)
-
-			for range numDeps {
-				randomPrevIndex := rand.Intn(i)
-				depID := fmt.Sprintf("task-%d", randomPrevIndex)
+			for range rand.Intn(3) {
+				depID := fmt.Sprintf("task-%d", rand.Intn(i))
 
 				if !slices.Contains(deps, depID) {
 					deps = append(deps, depID)
@@ -45,12 +81,12 @@ func generateTask(n int) []Task {
 
 func main() {
 	tasks := generateTask(10)
-	g := NewGraph()
 
 	for _, t := range tasks {
 		fmt.Printf("ID: %s, Dur: %d, Deps: %v \n", t.id, t.durationMs, t.dependencies)
-		g.vertices[t.id] = append(g.vertices[t.id], t.dependencies...)
 	}
 
-	fmt.Println(g.vertices)
+	sortedList := topSort(tasks)
+
+	fmt.Println(sortedList)
 }
