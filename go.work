@@ -6,4 +6,5 @@ use (
 	./goroutine-memory
 	./task-scheduling
 	./time-conversion
+	./word-frequency-counter
 )
