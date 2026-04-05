@@ -4,6 +4,7 @@ use (
 	./deadlock
 	./goroutine-leak
 	./goroutine-memory
+	./http-authentication-middleware
 	./task-scheduling
 	./time-conversion
 	./word-frequency-counter
