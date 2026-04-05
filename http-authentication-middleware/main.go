@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -42,7 +42,9 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 		return err
 	}
 
-	srv := NewServer()
+	logger := slog.New(slog.NewTextHandler(w, nil))
+
+	srv := NewServer(logger)
 
 	httpServer := &http.Server{
 		Addr:    net.JoinHostPort(cfg.host, cfg.port),
@@ -50,9 +52,9 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 	}
 
 	go func() {
-		log.Printf("Listening on port %v \n", cfg.port)
+		logger.Info("Listening...", "port", cfg.port)
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			fmt.Fprintf(os.Stderr, "error listening and serving: %s \n", err)
+			logger.Error("error listening and serving", "error", err)
 		}
 	}()
 
@@ -66,8 +68,9 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
+		logger.Info("shutting down server...")
 		if err := httpServer.Shutdown(shutdownCtx); err != nil {
-			fmt.Fprintf(os.Stderr, "error shutting down server: %s \n", err)
+			logger.Error("error shutting down server", "error", err)
 		}
 	}()
 
