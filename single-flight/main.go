@@ -18,12 +18,12 @@ func expensivOperation(key string) (string, error) {
 func main() {
 	for i := 0; i < 5; i++ {
 		go func(i int) {
-			v, err, _ := group.Do("the_key", func() (any, error) {
+			v, err, shared := group.Do("the_key", func() (any, error) {
 				return expensivOperation("the_key")
 			})
 
 			if err == nil {
-				fmt.Printf("Goroutine %d got result: %v\n", i, v)
+				fmt.Printf("Goroutine %d got shared = %t result: %v\n", i, shared, v)
 			}
 		}(i)
 	}

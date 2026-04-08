@@ -6,6 +6,7 @@ use (
 	./goroutine-memory
 	./http-authentication-middleware
 	./single-flight
+	./single-flight-cache
 	./task-scheduling
 	./time-conversion
 	./word-frequency-counter
