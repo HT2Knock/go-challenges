@@ -5,6 +5,7 @@ use (
 	./goroutine-leak
 	./goroutine-memory
 	./http-authentication-middleware
+	./single-flight
 	./task-scheduling
 	./time-conversion
 	./word-frequency-counter
