@@ -4,7 +4,7 @@
 
 Converts Unix timestamp `1585750374` to a TinyTime struct and adds 48 hours.
 
-```
+```text
 1585750374 converted to a tinytime is: 2020-03-30 05:32:54 +0000 UTC
 ```
 

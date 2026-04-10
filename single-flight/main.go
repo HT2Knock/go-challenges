@@ -16,7 +16,7 @@ func expensivOperation(key string) (string, error) {
 }
 
 func main() {
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		go func(i int) {
 			v, err, shared := group.Do("the_key", func() (any, error) {
 				return expensivOperation("the_key")

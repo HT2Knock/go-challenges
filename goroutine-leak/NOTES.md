@@ -4,7 +4,7 @@
 
 A goroutine is spawned to generate integers infinitely. When the consumer breaks after reading 6 values, the producer goroutine keeps running forever.
 
-```
+```text
 0
 1
 2
@@ -25,18 +25,23 @@ Notice: Even though we "finished", there are still 2 goroutines (main + the gene
 ## Detection Methods
 
 ### 1. runtime.NumGoroutine()
+
 ```go
 fmt.Printf("Active goroutines: %d\n", runtime.NumGoroutine())
 ```
+
 Quick sanity check during development.
 
 ### 2. pprof Goroutine Profile
+
 ```go
 pprof.Lookup("goroutine").WriteTo(os.Stdout, 1)
 ```
+
 Dumps all goroutines with stack traces - shows where leaks originate.
 
 ### 3. go tool pprof
+
 ```bash
 # Generate profile
 go tool pprof http://localhost:6060/debug/pprof/goroutine
@@ -48,6 +53,7 @@ go tool pprof goroutine.prof
 ## Fixes
 
 ### 1. Done Channel
+
 ```go
 func gen(done <-chan struct{}) <-chan int {
     ch := make(chan int)
@@ -75,6 +81,7 @@ for i := range gen(done) {
 ```
 
 ### 2. Context Cancellation
+
 ```go
 func gen(ctx context.Context) <-chan int {
     ch := make(chan int)
