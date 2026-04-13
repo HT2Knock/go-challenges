@@ -1,6 +1,7 @@
 go 1.26.1
 
 use (
+	./benchmark-sort
 	./deadlock
 	./goroutine-leak
 	./goroutine-memory
