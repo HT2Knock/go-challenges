@@ -3,6 +3,7 @@ go 1.26.1
 use (
 	./benchmark-sort
 	./deadlock
+	./errgroup
 	./goroutine-leak
 	./goroutine-memory
 	./http-authentication-middleware
