@@ -6,6 +6,7 @@ use (
 	./goroutine-leak
 	./goroutine-memory
 	./http-authentication-middleware
+	./saga-pattern
 	./single-flight
 	./single-flight-cache
 	./task-scheduling
