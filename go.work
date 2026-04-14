@@ -7,6 +7,7 @@ use (
 	./goroutine-leak
 	./goroutine-memory
 	./http-authentication-middleware
+	./json-stream
 	./saga-pattern
 	./single-flight
 	./single-flight-cache
