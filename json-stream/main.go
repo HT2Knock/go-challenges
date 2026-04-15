@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/parquet-go/parquet-go"
 )
 
@@ -81,17 +82,14 @@ func convert(path string) error {
 
 	writer := parquet.NewGenericWriter[LogEntryV1](pf, parquet.Compression(&parquet.Zstd))
 
-	decoder := json.NewDecoder(jsonFile)
-	if _, err = decoder.Token(); err != nil {
-		return fmt.Errorf("expected array start: %w", err)
-	}
+	scanner := bufio.NewScanner(jsonFile)
 
 	const batchSize = 1000
 	batch := make([]LogEntryV1, 0, batchSize)
 
-	for decoder.More() {
+	for scanner.Scan() {
 		var l LogEntryV1
-		if err := decoder.Decode(&l); err != nil {
+		if err := json.Unmarshal(scanner.Bytes(), &l); err != nil {
 			return fmt.Errorf("decode error: %w", err)
 		}
 
@@ -126,7 +124,7 @@ func convertV2(path string) error {
 	defer jsonFile.Close()
 
 	// Buffer reader and writer to read a larger chunk
-	reader := bufio.NewReaderSize(jsonFile, 32*1024)
+	scanner := bufio.NewScanner(jsonFile)
 
 	pf, err := os.Create(outPath)
 	if err != nil {
@@ -136,19 +134,17 @@ func convertV2(path string) error {
 
 	writer := parquet.NewGenericWriter[LogEntryV2](pf, parquet.Compression(&parquet.Zstd))
 
-	decoder := json.NewDecoder(reader)
-	if _, err = decoder.Token(); err != nil {
-		return fmt.Errorf("expected array start: %w", err)
-	}
-
 	const batchSize = 1000
 	batch := make([]LogEntryV2, 0, batchSize)
 
-	var l LogEntryV2
-	for decoder.More() {
-		l = LogEntryV2{}
+	for scanner.Scan() {
+		var l LogEntryV2
 
-		if err := decoder.Decode(&l); err != nil {
+		if err := sonic.Unmarshal(scanner.Bytes(), &l); err != nil {
+			if err.Error() == "EOF" || err.Error() == "io.EOF" {
+				break
+			}
+
 			return fmt.Errorf("decode error: %w", err)
 		}
 
