@@ -123,8 +123,9 @@ func convertV2(path string) error {
 	}
 	defer jsonFile.Close()
 
-	// Buffer reader and writer to read a larger chunk
-	scanner := bufio.NewScanner(jsonFile)
+	// Buffer reader and writer to read a larger chunk 1MB
+	reader := bufio.NewReaderSize(jsonFile, 1024*1024)
+	decoder := sonic.ConfigDefault.NewDecoder(reader)
 
 	pf, err := os.Create(outPath)
 	if err != nil {
@@ -132,15 +133,15 @@ func convertV2(path string) error {
 	}
 	defer pf.Close()
 
-	writer := parquet.NewGenericWriter[LogEntryV2](pf, parquet.Compression(&parquet.Zstd))
+	writer := parquet.NewGenericWriter[LogEntryV2](pf, parquet.Compression(&parquet.Zstd), parquet.PageBufferSize(4*1024*1024))
 
-	const batchSize = 1000
+	const batchSize = 100
 	batch := make([]LogEntryV2, 0, batchSize)
 
-	for scanner.Scan() {
+	for {
 		var l LogEntryV2
 
-		if err := sonic.Unmarshal(scanner.Bytes(), &l); err != nil {
+		if err := decoder.Decode(&l); err != nil {
 			if err.Error() == "EOF" || err.Error() == "io.EOF" {
 				break
 			}
