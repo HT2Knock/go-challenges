@@ -11,6 +11,7 @@ use (
 	./saga-pattern
 	./single-flight
 	./single-flight-cache
+	./stringer
 	./task-scheduling
 	./time-conversion
 	./word-frequency-counter
